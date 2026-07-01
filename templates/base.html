@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}سیستم کارت به کارت{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto px-4 py-4 max-w-md">
+        <!-- Header -->
+        <header class="bg-blue-600 text-white rounded-lg p-4 mb-4">
+            <h1 class="text-xl font-bold text-center">سیستم کارت به کارت</h1>
+            {% if user.is_authenticated %}
+            <p class="text-sm text-center mt-2">خوش آمدید {{ user.username }}</p>
+            {% endif %}
+        </header>
+        
+        <!-- Messages -->
+        {% if messages %}
+            {% for message in messages %}
+                <div class="mb-4 p-3 rounded {% if message.tags == 'success' %}bg-green-100 text-green-700{% else %}bg-red-100 text-red-700{% endif %}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+        
+        <!-- Content -->
+        <main>
+            {% block content %}{% endblock %}
+        </main>
+        
+        <!-- Navigation -->
+        {% if user.is_authenticated %}
+        <nav class="fixed bottom-0 left-0 right-0 bg-white shadow-lg border-t">
+            <div class="flex justify-around py-2">
+                <a href="{% url 'transactions:new' %}" class="text-center">
+                    <i class="fas fa-exchange-alt text-xl"></i>
+                    <span class="text-xs block">انتقال</span>
+                </a>
+                <a href="{% url 'transactions:history' %}" class="text-center">
+                    <i class="fas fa-history text-xl"></i>
+                    <span class="text-xs block">تاریخچه</span>
+                </a>
+                <a href="{% url 'accounts:profile' %}" class="text-center">
+                    <i class="fas fa-user text-xl"></i>
+                    <span class="text-xs block">پروفایل</span>
+                </a>
+                <a href="{% url 'accounts:logout' %}" class="text-center">
+                    <i class="fas fa-sign-out-alt text-xl"></i>
+                    <span class="text-xs block">خروج</span>
+                </a>
+            </div>
+        </nav>
+        {% endif %}
+    </div>
+</body>
+</html>

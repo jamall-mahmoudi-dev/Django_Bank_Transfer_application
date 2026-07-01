@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+{% load static %}
+{% csrf_token %}
+
+{% block title %}ثبت نام{% endblock %}
+
+{% block content %}
+<div class="bg-white rounded-lg shadow-lg p-6 mb-20">
+    <h2 class="text-2xl font-bold text-center text-blue-600 mb-6">
+        <i class="fas fa-user-plus ml-2"></i>
+        ثبت نام
+    </h2>
+    
+    <form method="post" novalidate>
+        {% csrf_token %}
+        
+        {% for field in form %}
+            <div class="mb-4">
+                <label for="{{ field.id_for_label }}" class="block text-gray-700 font-medium mb-2">
+                    {{ field.label }}
+                    {% if field.field.required %}
+                        <span class="text-red-500">*</span>
+                    {% endif %}
+                </label>
+                
+                {{ field }}
+                
+                {% if field.errors %}
+                    <div class="text-red-500 text-sm mt-1">
+                        {% for error in field.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                
+                {% if field.help_text and field.name == 'password1' %}
+                    <small class="text-gray-500 text-xs mt-1 block">{{ field.help_text }}</small>
+                {% endif %}
+            </div>
+        {% endfor %}
+        
+        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition duration-200">
+            <i class="fas fa-user-plus ml-2"></i>
+            ثبت نام
+        </button>
+    </form>
+    
+    <hr class="my-6">
+    
+    <div class="text-center">
+        <p class="text-gray-600">قبلاً ثبت نام کرده‌اید؟</p>
+        <a href="{% url 'accounts:register' %}" class="inline-block mt-2 text-blue-600 hover:text-blue-800 font-medium">
+            <i class="fas fa-sign-in-alt ml-1"></i>
+            وارد شوید
+        </a>
+    </div>
+</div>
+
+<style>
+    /* استایل فیلدهای فرم */
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    input[type="tel"] {
+        width: 100%;
+        padding: 10px 12px;
+        border: 2px solid #e2e8f0;
+        border-radius: 8px;
+        transition: border-color 0.2s;
+        font-size: 16px;
+        background-color: #f7fafc;
+    }
+    
+    input:focus {
+        outline: none;
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        background-color: white;
+    }
+    
+    input.error {
+        border-color: #ef4444;
+    }
+    
+    .errorlist {
+        list-style: none;
+        padding: 0;
+        margin: 4px 0;
+        color: #ef4444;
+        font-size: 13px;
+    }
+    
+    .errorlist li {
+        padding: 2px 0;
+    }
+</style>
+{% endblock %}

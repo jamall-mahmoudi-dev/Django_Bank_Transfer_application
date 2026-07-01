@@ -1,0 +1,137 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}پروفایل کاربری{% endblock %}
+
+{% block content %}
+<div class="bg-white rounded-lg shadow-lg p-6 mb-20">
+    <h2 class="text-2xl font-bold text-center text-purple-600 mb-6">
+        <i class="fas fa-user-circle ml-2"></i>
+        پروفایل کاربری
+    </h2>
+    
+    <!-- اطلاعات کاربری -->
+    <div class="bg-gray-50 rounded-lg p-4 mb-6">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-gray-600 text-sm">نام کاربری</p>
+                <p class="text-lg font-bold">{{ user.username }}</p>
+            </div>
+            <div class="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center text-white text-2xl font-bold">
+                {{ user.username|first|upper }}
+            </div>
+        </div>
+        
+        {% if user.balance %}
+        <div class="mt-3 pt-3 border-t">
+            <p class="text-gray-600 text-sm">موجودی حساب</p>
+            <p class="text-xl font-bold text-green-600">
+                {{ user.balance|floatformat:0|default:"0" }} ریال
+            </p>
+        </div>
+        {% endif %}
+        
+        {% if user.card_number %}
+        <div class="mt-2 pt-2 border-t">
+            <p class="text-gray-600 text-sm">شماره کارت</p>
+            <p class="text-lg font-mono text-blue-600" dir="ltr">
+                {{ user.card_number }}
+            </p>
+        </div>
+        {% endif %}
+    </div>
+    
+    <!-- فرم ویرایش پروفایل -->
+    <form method="post" novalidate>
+        {% csrf_token %}
+        
+        {% for field in form %}
+            <div class="mb-4">
+                <label for="{{ field.id_for_label }}" class="block text-gray-700 font-medium mb-2">
+                    {{ field.label }}
+                    {% if field.field.required %}
+                        <span class="text-red-500">*</span>
+                    {% endif %}
+                </label>
+                
+                {{ field }}
+                
+                {% if field.errors %}
+                    <div class="text-red-500 text-sm mt-1">
+                        {% for error in field.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                
+                {% if field.help_text %}
+                    <small class="text-gray-500 text-xs mt-1 block">{{ field.help_text }}</small>
+                {% endif %}
+            </div>
+        {% endfor %}
+        
+        <div class="flex gap-3">
+            <button type="submit" class="flex-1 bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-4 rounded-lg transition duration-200">
+                <i class="fas fa-save ml-2"></i>
+                ذخیره تغییرات
+            </button>
+            
+            <a href="{% url 'home' %}" class="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-3 px-4 rounded-lg transition duration-200 text-center">
+                <i class="fas fa-arrow-right ml-2"></i>
+                بازگشت
+            </a>
+        </div>
+    </form>
+    
+    <hr class="my-6">
+    
+    <!-- بخش تغییر رمز عبور - اصلاح شده -->
+    <div class="text-center">
+        <p class="text-gray-600 mb-2">می‌خواهید رمز عبور خود را تغییر دهید؟</p>
+        <a href="{% url 'accounts:change_password' %}" class="inline-block text-blue-600 hover:text-blue-800 font-medium">
+            <i class="fas fa-key ml-1"></i>
+            تغییر رمز عبور
+        </a>
+    </div>
+</div>
+
+<style>
+    /* استایل فیلدهای فرم */
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    input[type="tel"],
+    input[type="number"] {
+        width: 100%;
+        padding: 10px 12px;
+        border: 2px solid #e2e8f0;
+        border-radius: 8px;
+        transition: border-color 0.2s;
+        font-size: 16px;
+        background-color: #f7fafc;
+    }
+    
+    input:focus {
+        outline: none;
+        border-color: #8b5cf6;
+        box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+        background-color: white;
+    }
+    
+    input.error {
+        border-color: #ef4444;
+    }
+    
+    .errorlist {
+        list-style: none;
+        padding: 0;
+        margin: 4px 0;
+        color: #ef4444;
+        font-size: 13px;
+    }
+    
+    .errorlist li {
+        padding: 2px 0;
+    }
+</style>
+{% endblock %}
