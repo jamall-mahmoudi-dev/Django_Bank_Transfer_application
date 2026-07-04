@@ -22,6 +22,20 @@ class UserRegistrationForm(UserCreationForm):
         label='شماره تلفن'
     )
     
+    # اضافه کردن فیلد شماره کارت برای ثبت‌نام
+    card_number = forms.CharField(
+        max_length=16,
+        required=False,
+        widget=forms.TextInput(attrs={
+            'class': 'w-full p-2 border rounded focus:outline-none focus:border-blue-500',
+            'placeholder': 'شماره ۱۶ رقمی کارت',
+            'maxlength': '16',
+            'dir': 'ltr'
+        }),
+        label='شماره کارت',
+        help_text='اختیاری - می‌توانید بعداً در پروفایل ثبت کنید'
+    )
+    
     username = forms.CharField(
         widget=forms.TextInput(attrs={
             'class': 'w-full p-2 border rounded focus:outline-none focus:border-blue-500',
@@ -61,7 +75,7 @@ class UserRegistrationForm(UserCreationForm):
     
     class Meta:
         model = User
-        fields = ('username', 'phone_number', 'email', 'password1', 'password2')
+        fields = ('username', 'phone_number', 'email', 'card_number', 'password1', 'password2')
     
     def clean_phone_number(self):
         phone_number = self.cleaned_data.get('phone_number')
@@ -88,9 +102,20 @@ class UserRegistrationForm(UserCreationForm):
             raise forms.ValidationError('این نام کاربری قبلاً ثبت شده است')
         return username
     
+    def clean_card_number(self):
+        card = self.cleaned_data.get('card_number')
+        if card:
+            card = card.strip().replace(' ', '').replace('-', '')
+            if not card.isdigit():
+                raise forms.ValidationError('شماره کارت باید فقط شامل اعداد باشد')
+            if len(card) != 16:
+                raise forms.ValidationError('شماره کارت باید ۱۶ رقم باشد')
+        return card
+    
     def save(self, commit=True):
         user = super().save(commit=False)
         user.phone_number = self.cleaned_data['phone_number']
+        user.card_number = self.cleaned_data.get('card_number', '')
         if commit:
             user.save()
         return user
@@ -111,6 +136,20 @@ class UserProfileForm(forms.ModelForm):
             'dir': 'ltr'
         }),
         label='شماره تلفن'
+    )
+    
+    # اضافه کردن فیلد شماره کارت به فرم پروفایل
+    card_number = forms.CharField(
+        max_length=16,
+        required=False,
+        widget=forms.TextInput(attrs={
+            'class': 'w-full p-2 border rounded focus:outline-none focus:border-blue-500',
+            'placeholder': 'شماره ۱۶ رقمی کارت',
+            'maxlength': '16',
+            'dir': 'ltr'
+        }),
+        label='شماره کارت',
+        help_text='شماره کارت ۱۶ رقمی خود را وارد کنید'
     )
     
     first_name = forms.CharField(
@@ -143,7 +182,7 @@ class UserProfileForm(forms.ModelForm):
     
     class Meta:
         model = User
-        fields = ('first_name', 'last_name', 'email', 'phone_number')
+        fields = ('first_name', 'last_name', 'email', 'phone_number', 'card_number')  # card_number را اضافه کنید
     
     def clean_phone_number(self):
         phone_number = self.cleaned_data.get('phone_number')
@@ -160,3 +199,13 @@ class UserProfileForm(forms.ModelForm):
             raise forms.ValidationError('این شماره تلفن قبلاً ثبت شده است')
         
         return phone_number
+    
+    def clean_card_number(self):
+        card = self.cleaned_data.get('card_number')
+        if card:
+            card = card.strip().replace(' ', '').replace('-', '')
+            if not card.isdigit():
+                raise forms.ValidationError('شماره کارت باید فقط شامل اعداد باشد')
+            if len(card) != 16:
+                raise forms.ValidationError('شماره کارت باید ۱۶ رقم باشد')
+        return card

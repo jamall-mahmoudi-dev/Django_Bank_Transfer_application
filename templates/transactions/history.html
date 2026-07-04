@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}تاریخچه تراکنش‌ها{% endblock %}
+
+{% block content %}
+<div class="bg-white rounded-lg shadow-lg p-6">
+    <h2 class="text-2xl font-bold text-center text-blue-600 mb-6">
+        <i class="fas fa-history ml-2"></i>
+        تاریخچه تراکنش‌ها
+    </h2>
+    
+    {% if transactions %}
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+                <thead>
+                    <tr class="bg-gray-100 border-b">
+                        <th class="text-right p-3">کد پیگیری</th>
+                        <th class="text-right p-3">مبلغ</th>
+                        <th class="text-right p-3">کارمزد</th>
+                        <th class="text-right p-3">وضعیت</th>
+                        <th class="text-right p-3">تاریخ</th>
+                        <th class="text-right p-3">جزئیات</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for transaction in transactions %}
+                        <tr class="border-b hover:bg-gray-50 transition">
+                            <td class="p-3 font-mono text-xs">{{ transaction.tracking_code|slice:"0:12" }}...</td>
+                            <td class="p-3 font-bold">{{ transaction.amount|floatformat:"0" }}</td>
+                            <td class="p-3 text-gray-600">{{ transaction.fee|floatformat:"0" }}</td>
+                            <td class="p-3">
+                                {% if transaction.status == 'success' %}
+                                    <span class="px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs font-bold">
+                                        <i class="fas fa-check-circle ml-1"></i> موفق
+                                    </span>
+                                {% elif transaction.status == 'pending' %}
+                                    <span class="px-2 py-1 bg-yellow-100 text-yellow-700 rounded-full text-xs font-bold">
+                                        <i class="fas fa-clock ml-1"></i> در انتظار
+                                    </span>
+                                {% elif transaction.status == 'failed' %}
+                                    <span class="px-2 py-1 bg-red-100 text-red-700 rounded-full text-xs font-bold">
+                                        <i class="fas fa-times-circle ml-1"></i> ناموفق
+                                    </span>
+                                {% else %}
+                                    <span class="px-2 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-bold">
+                                        {{ transaction.get_status_display }}
+                                    </span>
+                                {% endif %}
+                            </td>
+                            <td class="p-3 text-xs text-gray-600">
+                                {{ transaction.created_at|date:"Y/m/d H:i" }}
+                            </td>
+                            <td class="p-3">
+                                <a href="{% url 'transactions:detail' transaction.pk %}" 
+                                   class="text-blue-600 hover:text-blue-800 hover:underline">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="mt-6 p-4 bg-gray-50 rounded-lg text-center">
+            <p class="text-gray-600 text-sm">تعداد کل تراکنش‌ها: <span class="font-bold">{{ transactions|length }}</span></p>
+        </div>
+    {% else %}
+        <div class="text-center py-12">
+            <div class="text-gray-400 text-6xl mb-4">
+                <i class="fas fa-inbox"></i>
+            </div>
+            <h3 class="text-xl font-bold text-gray-600 mb-2">هیچ تراکنشی وجود ندارد</h3>
+            <p class="text-gray-500 mb-6">شما هنوز هیچ انتقال وجهی انجام نداده‌اید.</p>
+            <a href="{% url 'transactions:new' %}" class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition duration-200">
+                <i class="fas fa-exchange-alt ml-2"></i>
+                اولین انتقال را انجام دهید
+            </a>
+        </div>
+    {% endif %}
+</div>
+
+<style>
+    table {
+        border-collapse: collapse;
+        width: 100%;
+    }
+    
+    th {
+        font-weight: 600;
+        color: #4a5568;
+        border-bottom: 2px solid #e2e8f0;
+    }
+    
+    td {
+        border-bottom: 1px solid #f3f4f6;
+    }
+    
+    tr:hover td {
+        background-color: #f7fafc;
+    }
+    
+    @media (max-width: 640px) {
+        table {
+            font-size: 12px;
+        }
+        td, th {
+            padding: 8px 6px;
+        }
+    }
+</style>
+{% endblock %}

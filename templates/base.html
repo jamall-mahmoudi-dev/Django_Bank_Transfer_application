@@ -4,11 +4,164 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}سیستم کارت به کارت{% endblock %}</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- استفاده از Tailwind CSS از CDN جایگزین -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    
+    <!-- استفاده از Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <style>
+        /* استایل‌های پایه */
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background-color: #f3f4f6;
+            padding-bottom: 80px; /* فاصله برای منوی پایین */
+        }
+        
+        /* گرادیانت‌ها */
+        .bg-gradient-to-br {
+            background-image: linear-gradient(to bottom right, var(--tw-gradient-from), var(--tw-gradient-to));
+        }
+        .from-blue-500 { --tw-gradient-from: #3b82f6; }
+        .to-blue-600 { --tw-gradient-to: #2563eb; }
+        .from-green-500 { --tw-gradient-from: #22c55e; }
+        .to-green-600 { --tw-gradient-to: #16a34a; }
+        .from-purple-500 { --tw-gradient-from: #a855f7; }
+        .to-purple-600 { --tw-gradient-to: #9333ea; }
+        .from-orange-500 { --tw-gradient-from: #f97316; }
+        .to-orange-600 { --tw-gradient-to: #ea580c; }
+        
+        /* منوی پایین */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: white;
+            box-shadow: 0 -4px 6px -1px rgba(0, 0, 0, 0.1);
+            border-top: 1px solid #e5e7eb;
+            z-index: 1000;
+        }
+        
+        .nav-link {
+            text-align: center;
+            color: #6b7280;
+            transition: color 0.2s;
+            padding: 8px 0;
+            flex: 1;
+        }
+        .nav-link:hover {
+            color: #2563eb;
+        }
+        .nav-link.active {
+            color: #2563eb;
+        }
+        
+        /* کارت‌ها */
+        .stat-card {
+            border-radius: 0.5rem;
+            padding: 1rem;
+            color: white;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* وضعیت‌ها */
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            display: inline-block;
+        }
+        .status-success {
+            background-color: #dcfce7;
+            color: #166534;
+        }
+        .status-pending {
+            background-color: #fef9c3;
+            color: #854d0e;
+        }
+        .status-failed {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+        
+        /* دکمه‌ها */
+        .btn-primary {
+            background-color: #2563eb;
+            color: white;
+            font-weight: bold;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            transition: all 0.2s;
+            text-align: center;
+            display: block;
+        }
+        .btn-primary:hover {
+            background-color: #1d4ed8;
+        }
+        
+        .btn-gray {
+            background-color: #4b5563;
+            color: white;
+            font-weight: bold;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            transition: all 0.2s;
+            text-align: center;
+            display: block;
+        }
+        .btn-gray:hover {
+            background-color: #374151;
+        }
+        
+        /* گرید دسکتاپ */
+        @media (min-width: 768px) {
+            .container-custom {
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 20px;
+            }
+            .stats-grid {
+                display: grid;
+                grid-template-columns: repeat(4, 1fr);
+                gap: 1rem;
+            }
+            .status-grid {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 1rem;
+            }
+            .actions-grid {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1rem;
+            }
+        }
+        
+        @media (max-width: 767px) {
+            .stats-grid {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.75rem;
+            }
+            .status-grid {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 0.75rem;
+            }
+            .actions-grid {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.75rem;
+            }
+        }
+    </style>
 </head>
 <body class="bg-gray-100">
-    <div class="container mx-auto px-4 py-4 max-w-md">
+    <!-- حذف max-w-md و استفاده از container-custom -->
+    <div class="container-custom">
         <!-- Header -->
         <header class="bg-blue-600 text-white rounded-lg p-4 mb-4">
             <h1 class="text-xl font-bold text-center">سیستم کارت به کارت</h1>
@@ -30,30 +183,34 @@
         <main>
             {% block content %}{% endblock %}
         </main>
-        
-        <!-- Navigation -->
-        {% if user.is_authenticated %}
-        <nav class="fixed bottom-0 left-0 right-0 bg-white shadow-lg border-t">
-            <div class="flex justify-around py-2">
-                <a href="{% url 'transactions:new' %}" class="text-center">
-                    <i class="fas fa-exchange-alt text-xl"></i>
-                    <span class="text-xs block">انتقال</span>
-                </a>
-                <a href="{% url 'transactions:history' %}" class="text-center">
-                    <i class="fas fa-history text-xl"></i>
-                    <span class="text-xs block">تاریخچه</span>
-                </a>
-                <a href="{% url 'accounts:profile' %}" class="text-center">
-                    <i class="fas fa-user text-xl"></i>
-                    <span class="text-xs block">پروفایل</span>
-                </a>
-                <a href="{% url 'accounts:logout' %}" class="text-center">
-                    <i class="fas fa-sign-out-alt text-xl"></i>
-                    <span class="text-xs block">خروج</span>
-                </a>
-            </div>
-        </nav>
-        {% endif %}
     </div>
+    
+    <!-- Navigation -->
+    {% if user.is_authenticated %}
+    <nav class="bottom-nav">
+        <div class="flex justify-around max-w-4xl mx-auto">
+            <a href="{% url 'dashboard:home' %}" class="nav-link active">
+                <i class="fas fa-home text-xl"></i>
+                <span class="text-xs block">خانه</span>
+            </a>
+            <a href="{% url 'transactions:new' %}" class="nav-link">
+                <i class="fas fa-exchange-alt text-xl"></i>
+                <span class="text-xs block">انتقال</span>
+            </a>
+            <a href="{% url 'transactions:history' %}" class="nav-link">
+                <i class="fas fa-history text-xl"></i>
+                <span class="text-xs block">تاریخچه</span>
+            </a>
+            <a href="{% url 'accounts:profile' %}" class="nav-link">
+                <i class="fas fa-user text-xl"></i>
+                <span class="text-xs block">پروفایل</span>
+            </a>
+            <a href="{% url 'accounts:logout' %}" class="nav-link">
+                <i class="fas fa-sign-out-alt text-xl"></i>
+                <span class="text-xs block">خروج</span>
+            </a>
+        </div>
+    </nav>
+    {% endif %}
 </body>
 </html>

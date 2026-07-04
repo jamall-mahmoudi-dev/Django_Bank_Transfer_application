@@ -1,39 +1,120 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}انتقال پول{% endblock %}
 
 {% block content %}
-<div class="bg-white rounded-lg p-6 shadow">
-    <h2 class="text-xl font-bold mb-4">انتقال وجه</h2>
+<div class="bg-white rounded-lg shadow-lg p-6">
+    <h2 class="text-2xl font-bold text-center text-blue-600 mb-6">
+        <i class="fas fa-exchange-alt ml-2"></i>
+        انتقال وجه
+    </h2>
     
-    <form method="post">
+    <!-- نمایش پیام‌های خطا -->
+    {% if messages %}
+        {% for message in messages %}
+            <div class="mb-4 p-3 rounded {% if message.tags == 'success' %}bg-green-100 text-green-700 border border-green-400{% else %}bg-red-100 text-red-700 border border-red-400{% endif %}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+    
+    <!-- نمایش اطلاعات کارت مبدأ و موجودی -->
+    <div class="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+        <div class="flex justify-between items-center">
+            <span class="text-sm text-gray-600">کارت مبدأ:</span>
+            <span class="font-mono font-bold">{{ user.card_number|default:"ثبت نشده" }}</span>
+        </div>
+        <div class="flex justify-between items-center mt-2">
+            <span class="text-sm text-gray-600">موجودی:</span>
+            <span class="font-bold text-green-600">{{ user.balance|default:"0"|floatformat:"0" }} ریال</span>
+        </div>
+    </div>
+    
+    <form method="post" novalidate>
         {% csrf_token %}
         
+        <!-- فیلد شماره کارت مقصد -->
         <div class="mb-4">
-            <label class="block text-gray-700 mb-2">شماره کارت مقصد</label>
+            <label for="{{ form.destination_card.id_for_label }}" class="block text-gray-700 font-medium mb-2">
+                {{ form.destination_card.label }}
+                <span class="text-red-500">*</span>
+            </label>
             {{ form.destination_card }}
             {% if form.destination_card.errors %}
-                <p class="text-red-500 text-sm mt-1">{{ form.destination_card.errors.0 }}</p>
+                <div class="text-red-500 text-sm mt-1">
+                    {% for error in form.destination_card.errors %}
+                        {{ error }}
+                    {% endfor %}
+                </div>
             {% endif %}
+            <p class="text-gray-500 text-xs mt-1">شماره کارت ۱۶ رقمی مقصد را وارد کنید</p>
         </div>
         
+        <!-- فیلد مبلغ -->
         <div class="mb-4">
-            <label class="block text-gray-700 mb-2">مبلغ (ریال)</label>
+            <label for="{{ form.amount.id_for_label }}" class="block text-gray-700 font-medium mb-2">
+                {{ form.amount.label }}
+                <span class="text-red-500">*</span>
+            </label>
             {{ form.amount }}
             {% if form.amount.errors %}
-                <p class="text-red-500 text-sm mt-1">{{ form.amount.errors.0 }}</p>
+                <div class="text-red-500 text-sm mt-1">
+                    {% for error in form.amount.errors %}
+                        {{ error }}
+                    {% endfor %}
+                </div>
             {% endif %}
+            <p class="text-gray-500 text-xs mt-1">حداقل ۱۰,۰۰۰ و حداکثر ۵۰,۰۰۰,۰۰۰ ریال</p>
         </div>
         
-        <div class="mb-4 p-3 bg-gray-50 rounded">
-            <p class="text-sm text-gray-600">کارمزد: ۵,۰۰۰ ریال</p>
-            <p class="text-sm text-gray-600">حداقل مبلغ: ۱۰,۰۰۰ ریال</p>
-            <p class="text-sm text-gray-600">حداکثر مبلغ: ۵۰,۰۰۰,۰۰۰ ریال</p>
+        <!-- اطلاعات کارمزد -->
+        <div class="mb-6 p-3 bg-blue-50 rounded-lg border border-blue-200">
+            <div class="flex justify-between items-center">
+                <span class="text-sm text-gray-700">کارمزد:</span>
+                <span class="text-sm font-bold text-gray-700">۵,۰۰۰ ریال</span>
+            </div>
+            <div class="flex justify-between items-center mt-1">
+                <span class="text-sm text-gray-700">مبلغ قابل پرداخت:</span>
+                <span class="text-sm font-bold text-blue-600">مبلغ + ۵,۰۰۰ ریال</span>
+            </div>
         </div>
         
-        <button type="submit" class="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700">
+        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition duration-200">
+            <i class="fas fa-exchange-alt ml-2"></i>
             انجام انتقال
         </button>
     </form>
 </div>
+
+<style>
+    input[type="text"],
+    input[type="number"] {
+        width: 100%;
+        padding: 12px 14px;
+        border: 2px solid #e2e8f0;
+        border-radius: 8px;
+        transition: border-color 0.2s, box-shadow 0.2s;
+        font-size: 16px;
+        background-color: #f7fafc;
+        direction: ltr;
+        text-align: left;
+    }
+    
+    input:focus {
+        outline: none;
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        background-color: white;
+    }
+    
+    input:disabled {
+        background-color: #f3f4f6;
+        cursor: not-allowed;
+    }
+    
+    input.is-invalid {
+        border-color: #ef4444;
+    }
+</style>
 {% endblock %}

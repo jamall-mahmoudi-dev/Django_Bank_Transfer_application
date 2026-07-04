@@ -3,7 +3,7 @@ from django.contrib.auth import login, logout, authenticate, update_session_auth
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_protect
-from django.contrib.auth.forms import PasswordChangeForm
+from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm
 from django.contrib.auth.backends import ModelBackend
 from .forms import UserRegistrationForm, UserProfileForm
 from .models import User
@@ -16,7 +16,7 @@ def register(request):
             user = form.save()
             login(request, user, backend='django.contrib.auth.backends.ModelBackend')
             messages.success(request, 'ثبت نام با موفقیت انجام شد!')
-            return redirect('home')
+            return redirect('dashboard:home')
     else:
         form = UserRegistrationForm()
     
@@ -25,18 +25,21 @@ def register(request):
 
 def user_login(request):
     if request.method == 'POST':
-        username = request.POST.get('username')
-        password = request.POST.get('password')
-        user = authenticate(request, username=username, password=password)
-        
-        if user is not None:
+        form = AuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+            user = form.get_user()
             login(request, user)
             messages.success(request, f'خوش آمدید {user.username}!')
-            return redirect('home')
+            
+            # ========== مهم: اینجا همیشه به داشبورد برو ==========
+            return redirect('dashboard:home')
+            # ==================================================
         else:
             messages.error(request, 'نام کاربری یا رمز عبور اشتباه است.')
+    else:
+        form = AuthenticationForm()
     
-    return render(request, 'accounts/login.html')
+    return render(request, 'accounts/login.html', {'form': form})
 
 
 @login_required
@@ -62,7 +65,6 @@ def profile(request):
 
 @login_required
 def change_password(request):
-    
     if request.method == 'POST':
         form = PasswordChangeForm(request.user, request.POST)
         if form.is_valid():

@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}تست API بانک{% endblock %}
+
+{% block content %}
+<div class="bg-white rounded-lg shadow-lg p-6">
+    <h2 class="text-2xl font-bold text-center text-blue-600 mb-6">
+        <i class="fas fa-university ml-2"></i>
+        تست API بانک
+    </h2>
+    
+    <div class="space-y-4">
+        <!-- ایجاد حساب -->
+        <div class="border rounded-lg p-4">
+            <h3 class="font-bold text-lg mb-3">ایجاد حساب بانکی</h3>
+            <div class="grid grid-cols-2 gap-3">
+                <input type="text" id="create-card" placeholder="شماره کارت" class="p-2 border rounded">
+                <input type="number" id="create-balance" placeholder="موجودی اولیه" class="p-2 border rounded">
+            </div>
+            <button onclick="createAccount()" class="mt-2 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+                ایجاد حساب
+            </button>
+            <div id="create-result" class="mt-2 text-sm"></div>
+        </div>
+        
+        <!-- بررسی موجودی -->
+        <div class="border rounded-lg p-4">
+            <h3 class="font-bold text-lg mb-3">بررسی موجودی</h3>
+            <input type="text" id="check-card" placeholder="شماره کارت" class="w-full p-2 border rounded">
+            <button onclick="checkBalance()" class="mt-2 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+                بررسی موجودی
+            </button>
+            <div id="check-result" class="mt-2 text-sm"></div>
+        </div>
+        
+        <!-- انتقال وجه -->
+        <div class="border rounded-lg p-4">
+            <h3 class="font-bold text-lg mb-3">انتقال وجه</h3>
+            <div class="grid grid-cols-3 gap-3">
+                <input type="text" id="transfer-source" placeholder="کارت مبدأ" class="p-2 border rounded">
+                <input type="text" id="transfer-dest" placeholder="کارت مقصد" class="p-2 border rounded">
+                <input type="number" id="transfer-amount" placeholder="مبلغ" class="p-2 border rounded">
+            </div>
+            <button onclick="transferMoney()" class="mt-2 bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700">
+                انتقال وجه
+            </button>
+            <div id="transfer-result" class="mt-2 text-sm"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+function showResult(elementId, data) {
+    const el = document.getElementById(elementId);
+    if (data.success) {
+        el.innerHTML = `<div class="bg-green-100 text-green-700 p-2 rounded"> ${JSON.stringify(data, null, 2)}</div>`;
+    } else {
+        el.innerHTML = `<div class="bg-red-100 text-red-700 p-2 rounded"> ${data.error || 'خطا رخ داد'}</div>`;
+    }
+}
+
+function createAccount() {
+    const card = document.getElementById('create-card').value;
+    const balance = document.getElementById('create-balance').value || 0;
+    
+    fetch('/bank/api/create-account/', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({card_number: card, initial_balance: parseInt(balance)})
+    })
+    .then(r => r.json())
+    .then(data => showResult('create-result', data));
+}
+
+function checkBalance() {
+    const card = document.getElementById('check-card').value;
+    
+    fetch('/bank/api/check-balance/', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({card_number: card})
+    })
+    .then(r => r.json())
+    .then(data => showResult('check-result', data));
+}
+
+function transferMoney() {
+    const source = document.getElementById('transfer-source').value;
+    const dest = document.getElementById('transfer-dest').value;
+    const amount = document.getElementById('transfer-amount').value;
+    
+    fetch('/bank/api/transfer/', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+            source_card: source,
+            destination_card: dest,
+            amount: parseInt(amount)
+        })
+    })
+    .then(r => r.json())
+    .then(data => showResult('transfer-result', data));
+}
+</script>
+{% endblock %}
