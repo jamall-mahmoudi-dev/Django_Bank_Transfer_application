@@ -167,7 +167,7 @@ LOGIN_REDIRECT_URL = 'dashboard:home'
 |  جزئیات تراکنش  | `/transactions/detail/<id>/` | مشاهده جزئیات تراکنش |
 |  تست API بانک  | `/bank/test/` | تست API شبیه‌سازی شده بانک |
 
-## 🔌 API های بانک
+##  API های بانک
 
 | آدرس | متد | توضیح |
 |------|------|--------|
@@ -225,7 +225,7 @@ python manage.py collectstatic
 -  ایمیل  jamallmahmoudi2001@gmail.com
 -  تلگرام  @Bahram_mahoudi_523
 
-## 📄 مجوز
+##  مجوز
 
 این پروژه تحت مجوز  MIT  منتشر شده است.
 
