@@ -167,9 +167,10 @@ class UserProfileForm(forms.ModelForm):
             'class': 'w-full p-2 border rounded focus:outline-none focus:border-blue-500',
             'placeholder': 'نام خانوادگی'
         }),
-        label='نام خانوادگی'
+        label='نام  خانوادگی'
     )
-    
+     
+     
     email = forms.EmailField(
         required=False,
         widget=forms.EmailInput(attrs={

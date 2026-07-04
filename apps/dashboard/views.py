@@ -9,7 +9,7 @@ def dashboard(request):
     # دریافت تراکنش‌های کاربر
     transactions = Transaction.objects.filter(user=request.user).order_by('-created_at')[:5]
     
-    # آمار کلی
+    # آمار کلی   
     total_transactions = Transaction.objects.filter(user=request.user).count()
     total_amount = Transaction.objects.filter(user=request.user, status='success').aggregate(
         total=Sum('amount')

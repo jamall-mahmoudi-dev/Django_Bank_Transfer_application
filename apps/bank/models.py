@@ -2,7 +2,7 @@ from django.db import models
 from django.conf import settings
 
 class BankAccount(models.Model):
-    """حساب بانکی فیک برای تست"""
+    """حساب بانکی فیک برای تست ب"""
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='bank_account')
     card_number = models.CharField(max_length=16, unique=True)
     balance = models.DecimalField(max_digits=15, decimal_places=0, default=0)
