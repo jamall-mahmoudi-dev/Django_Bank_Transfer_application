@@ -2,7 +2,8 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.db.models import Sum
 from apps.transactions.models import Transaction
-from apps.accounts.models import User
+from rest_framework.views import APIView
+from rest_framework.response import Response
 
 @login_required
 def dashboard(request):
@@ -36,3 +37,14 @@ def dashboard(request):
     }
     
     return render(request, 'dashboard/dashboard.html', context)
+# for test 
+class api_test(APIView):
+    permission_classes = []  
+    
+    def get(self, request):
+        content = {
+            'message': 'test class Django',
+            'status': 'success',
+            'timestamp': '2026-07-04'
+        }
+        return Response(content)

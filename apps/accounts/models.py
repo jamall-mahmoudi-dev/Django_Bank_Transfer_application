@@ -18,3 +18,11 @@ class User(AbstractUser):
     
     def __str__(self):
         return f"{self.username} - {self.phone_number}"
+
+    @property
+    def bank_balance(self):
+        """موجودی واقعی از BankAccount (اپ bank) که با انتقال‌های واقعی
+        به‌روز می‌شود. فیلد balance بالا دیگر توسط اپ transactions همگام
+        نمی‌شود - در تمپلیت‌ها و ویوها به‌جای user.balance از همین استفاده کنید."""
+        account = getattr(self, 'bank_account', None)
+        return account.balance if account else 0

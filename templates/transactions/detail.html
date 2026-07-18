@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}جزئیات تراکنش{% endblock %}
+
+{% block content %}
+<div class="bg-white rounded-lg shadow-lg p-6">
+    <h2 class="text-2xl font-bold text-center text-blue-600 mb-6">
+        <i class="fas fa-receipt ml-2"></i>
+        جزئیات تراکنش
+    </h2>
+
+    <div class="text-center mb-4">
+        {% if transaction.status == 'success' %}
+            <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-bold">
+                <i class="fas fa-check-circle ml-1"></i> موفق
+            </span>
+        {% elif transaction.status == 'pending' %}
+            <span class="px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full text-sm font-bold">
+                <i class="fas fa-clock ml-1"></i> در انتظار
+            </span>
+        {% elif transaction.status == 'failed' %}
+            <span class="px-3 py-1 bg-red-100 text-red-700 rounded-full text-sm font-bold">
+                <i class="fas fa-times-circle ml-1"></i> ناموفق
+            </span>
+        {% else %}
+            <span class="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm font-bold">
+                {{ transaction.get_status_display }}
+            </span>
+        {% endif %}
+    </div>
+
+    <div class="bg-gray-50 rounded-lg p-4 mb-6 text-right">
+        <div class="flex justify-between py-2 border-b">
+            <span class="text-gray-600">کد پیگیری:</span>
+            <span class="font-mono font-bold">{{ transaction.tracking_code }}</span>
+        </div>
+        <div class="flex justify-between py-2 border-b">
+            <span class="text-gray-600">کارت مبدأ:</span>
+            <span class="font-mono">{{ transaction.source_card }}</span>
+        </div>
+        <div class="flex justify-between py-2 border-b">
+            <span class="text-gray-600">کارت مقصد:</span>
+            <span class="font-mono">{{ transaction.destination_card }}</span>
+        </div>
+        <div class="flex justify-between py-2 border-b">
+            <span class="text-gray-600">مبلغ:</span>
+            <span class="font-bold">{{ transaction.amount|floatformat:"0" }} ریال</span>
+        </div>
+        <div class="flex justify-between py-2 border-b">
+            <span class="text-gray-600">کارمزد:</span>
+            <span class="font-bold">{{ transaction.fee|floatformat:"0" }} ریال</span>
+        </div>
+        {% if transaction.bank_reference %}
+        <div class="flex justify-between py-2 border-b">
+            <span class="text-gray-600">مرجع بانک:</span>
+            <span class="font-mono text-xs">{{ transaction.bank_reference }}</span>
+        </div>
+        {% endif %}
+        <div class="flex justify-between py-2">
+            <span class="text-gray-600">تاریخ:</span>
+            <span>{{ transaction.created_at|date:"Y/m/d H:i" }}</span>
+        </div>
+    </div>
+
+    <a href="{% url 'transactions:history' %}" class="block w-full bg-gray-600 hover:bg-gray-700 text-white font-bold py-3 px-4 rounded-lg transition duration-200 text-center">
+        <i class="fas fa-arrow-right ml-2"></i>
+        بازگشت به تاریخچه
+    </a>
+</div>
+{% endblock %}

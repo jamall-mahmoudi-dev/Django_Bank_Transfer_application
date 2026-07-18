@@ -3,6 +3,7 @@ from django.contrib.auth import login, logout, authenticate, update_session_auth
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_protect
+from django.views.decorators.http import require_POST
 from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm
 from django.contrib.auth.backends import ModelBackend
 from .forms import UserRegistrationForm, UserProfileForm
@@ -43,7 +44,10 @@ def user_login(request):
 
 
 @login_required
+@require_POST
 def user_logout(request):
+    # خروج فقط با POST مجاز است (استاندارد جنگو ۴.۱+)، تا یک لینک/عکس
+    # مخرب خارجی نتونه صرفاً با GET کاربر رو لاگ‌اوت کنه
     logout(request)
     messages.success(request, 'با موفقیت خارج شدید.')
     return redirect('accounts:login')

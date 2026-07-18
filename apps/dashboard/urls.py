@@ -5,4 +5,5 @@ app_name = 'dashboard'
 
 urlpatterns = [
     path('dashboard/', views.dashboard, name='home'),
+    path('api/', views.api_test.as_view(), name='api_test'),
 ]

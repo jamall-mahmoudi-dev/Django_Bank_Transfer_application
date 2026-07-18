@@ -4,8 +4,11 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.shortcuts import redirect
 
+
 urlpatterns = [
     path('admin/', admin.site.urls),
+    
+    path("api-auth/", include("rest_framework.urls")),
     path('', lambda request: redirect('transactions:new'), name='home'),
     path('accounts/', include('apps.accounts.urls')),
     path('', include('apps.dashboard.urls')),

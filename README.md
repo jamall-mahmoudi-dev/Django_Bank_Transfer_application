@@ -24,16 +24,15 @@
 
 - Python 3.8 یا بالاتر
 - pip (مدیریت بسته‌های Python)
-- virtualenv (اختیاری)
+- virtualenv 
 
 ##  نصب و راه‌اندازی
 
 ### ۱. کلون کردن پروژه
 
 ```bash
-git clone https://github.com/yourusername/bank_transfer_app.git
-cd bank_transfer_app
-```
+git clone https://github.com/jamall-mahmoudi-dev/Django_Bank_Transfer_application.git
+cd Django_Bank_Transfer_application
 
 ### ۲. ایجاد و فعال کردن محیط مجازی
 
@@ -154,7 +153,7 @@ LOGIN_URL = 'accounts:login'
 LOGIN_REDIRECT_URL = 'dashboard:home'
 ```
 
-## 📱 صفحات پروژه
+##  صفحات پروژه
 
 | صفحه | آدرس | توضیح |
 |------|------|--------|
@@ -222,8 +221,8 @@ python manage.py collectstatic
 
 ##  پشتیبانی
 
--  ایمیل  jamallmahmoudi2001@gmail.com
--  تلگرام  @Bahram_mahoudi_523
+-  ایمیل  : jamallmahmoudi2001@gmail.com
+-  تلگرام : Bahram_Mahmoudi_523
 
 ##  مجوز
 

@@ -35,7 +35,22 @@ class UserRegistrationForm(UserCreationForm):
         label='شماره کارت',
         help_text='اختیاری - می‌توانید بعداً در پروفایل ثبت کنید'
     )
-    
+
+    # موجودی اولیه - فقط برای تست/دمو. فقط وقتی معنا دارد که شماره کارت هم وارد شده باشد
+    initial_balance = forms.IntegerField(
+        required=False,
+        min_value=0,
+        max_value=50000000,
+        initial=0,
+        widget=forms.NumberInput(attrs={
+            'class': 'w-full p-2 border rounded focus:outline-none focus:border-blue-500',
+            'placeholder': '0',
+            'dir': 'ltr'
+        }),
+        label='موجودی اولیه (ریال)',
+        help_text='اختیاری، فقط برای تست - در صورت وارد کردن شماره کارت واریز می‌شود'
+    )
+
     username = forms.CharField(
         widget=forms.TextInput(attrs={
             'class': 'w-full p-2 border rounded focus:outline-none focus:border-blue-500',
@@ -75,8 +90,18 @@ class UserRegistrationForm(UserCreationForm):
     
     class Meta:
         model = User
-        fields = ('username', 'phone_number', 'email', 'card_number', 'password1', 'password2')
-    
+        fields = ('username', 'phone_number', 'email', 'card_number', 'initial_balance', 'password1', 'password2')
+
+    def clean(self):
+        cleaned_data = super().clean()
+        initial_balance = cleaned_data.get('initial_balance') or 0
+        card_number = cleaned_data.get('card_number')
+        if initial_balance and not card_number:
+            raise forms.ValidationError(
+                'برای واریز موجودی اولیه ابتدا باید شماره کارت را وارد کنید'
+            )
+        return cleaned_data
+
     def clean_phone_number(self):
         phone_number = self.cleaned_data.get('phone_number')
         # حذف فاصله و کاراکترهای اضافی
@@ -110,6 +135,10 @@ class UserRegistrationForm(UserCreationForm):
                 raise forms.ValidationError('شماره کارت باید فقط شامل اعداد باشد')
             if len(card) != 16:
                 raise forms.ValidationError('شماره کارت باید ۱۶ رقم باشد')
+            # بدون این چک، دو کاربر می‌توانستند یک شماره کارت یکسان ثبت کنند
+            # که با unique بودن BankAccount.card_number در اپ bank تداخل پیدا می‌کند
+            if User.objects.filter(card_number=card).exists():
+                raise forms.ValidationError('این شماره کارت قبلاً ثبت شده است')
         return card
     
     def save(self, commit=True):
@@ -117,7 +146,15 @@ class UserRegistrationForm(UserCreationForm):
         user.phone_number = self.cleaned_data['phone_number']
         user.card_number = self.cleaned_data.get('card_number', '')
         if commit:
+            # این save باعث اجرای signal ساخت BankAccount در accounts/signals.py می‌شود
             user.save()
+            initial_balance = self.cleaned_data.get('initial_balance') or 0
+            if initial_balance and user.card_number:
+                try:
+                    from apps.bank.models import BankAccount
+                except ImportError:
+                    from bank.models import BankAccount
+                BankAccount.objects.filter(user=user).update(balance=initial_balance)
         return user
 
 
@@ -209,4 +246,7 @@ class UserProfileForm(forms.ModelForm):
                 raise forms.ValidationError('شماره کارت باید فقط شامل اعداد باشد')
             if len(card) != 16:
                 raise forms.ValidationError('شماره کارت باید ۱۶ رقم باشد')
+            # بدون این چک، کاربر می‌توانست شماره کارت یک کاربر دیگر را ثبت کند
+            if User.objects.exclude(pk=self.instance.pk).filter(card_number=card).exists():
+                raise forms.ValidationError('این شماره کارت قبلاً برای کاربر دیگری ثبت شده است')
         return card
